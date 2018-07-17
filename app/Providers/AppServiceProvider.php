@@ -11,6 +11,9 @@ use App\Repositories\Modules\BasePermission\Provider AS BasePermission;
 use App\Repositories\Modules\BaseRole\Provider AS BaseRole;
 use App\Repositories\Modules\BaseLogs\Provider AS BaseLogs;
 use App\Repositories\Modules\Notification\Provider as Notification;
+use App\Repositories\Modules\News\Provider as News;
+use App\Repositories\Modules\NewDetail\Provider as NewDetail;
+use App\Repositories\Modules\NewCorrelation\Provider as NewCorrelation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,5 +43,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(BasePermission::class);
         $this->app->register(BaseRole::class);
         $this->app->register(BaseLogs::class);
+        $this->app->register(News::class);
+        $this->app->register(NewDetail::class);
+        $this->app->register(NewCorrelation::class);
     }
 }

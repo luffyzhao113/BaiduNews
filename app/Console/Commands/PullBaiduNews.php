@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Plugins\DateTime\DateTime;
 use App\Plugins\QueryList\BaiduNews;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use QL\QueryList;
+use App\Repositories\Modules\News\Interfaces as News;
+use Cache;
 
 class PullBaiduNews extends Command
 {
@@ -22,6 +24,7 @@ class PullBaiduNews extends Command
      * @var string
      */
     protected $description = 'pull baidu news in my databases';
+    
 
     /**
      * Create a new command instance.
@@ -40,23 +43,35 @@ class PullBaiduNews extends Command
      */
     public function handle()
     {
+        $searcher = $this->getSearcher();
+
+        $searcher->each(function ($item){
+            if(Cache::has(md5($item['link']))){
+                return ;
+            }
+            
+            $news = app(News::class)->create([
+                'title' => $item['title'],
+                'link' => $item['link'],
+                'author' => $item['author'],
+                'pull_at' => DateTime::forString($item['time'])->format('Y-m-d H:i:s'),
+                'summary' => $item['summary'],
+            ]);
+
+            Cache::put(md5($item['link']), $item['title'], 60*24);
+        });
+
+
+    }
+
+    protected function getSearcher(){
         $ql = new QueryList();
 
         $ql->use(BaiduNews::class, 'badiduNews');
 
-        $baidu = $ql->badiduNews(10);
-        
-        $searcher = $baidu->search($this->argument('keyword'));
-        
+        $baidu = $ql->badiduNews(30);
 
-        $searcher->each(function ($item) use($ql){
-            $this->info('title:'. $item['title']);
-            $this->info('link:'. $item['link']);
-            $this->info('author:'. $item['author']);
-            $this->info('time:'. $item['time']);
-            $this->info('more_link:', $item['more_link']);
-            $this->info('summary:'. $item['summary']);
-        });
+        return $baidu->search($this->argument('keyword'));
     }
 
 
