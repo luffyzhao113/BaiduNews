@@ -9,7 +9,6 @@
 namespace App\Plugins\QueryList;
 
 
-use Carbon\Carbon;
 use QL\QueryList;
 
 class BaiduNews
