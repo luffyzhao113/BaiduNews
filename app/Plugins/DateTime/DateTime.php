@@ -22,6 +22,8 @@ class DateTime extends Carbon
             }else{
                 return Carbon::create($matches[7], $matches[8], $matches[9], $matches[10], $matches[11]);
             }
+        }else{
+            return Carbon::createFromTimestamp($string);
         }
     }
 }

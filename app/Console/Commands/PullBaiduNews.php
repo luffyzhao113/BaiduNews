@@ -46,36 +46,38 @@ class PullBaiduNews extends Command
     {
         $searcher = $this->getSearcher();
 
-//        $searcher->each(function ($item){
-//            if(Cache::has(md5($item['link']))){
-//                return ;
-//            }
-//
-//            $news = app(News::class)->create([
-//                'title' => $item['title'],
-//                'link' => $item['link'],
-//                'author' => $item['author'],
-//                'pull_at' => DateTime::forString($item['time'])->format('Y-m-d H:i:s'),
-//                'summary' => $item['summary'],
-//            ]);
-//
-//            Cache::put(md5($item['link']), $item['title'], 60*24);
-//        });
+        $pullTime = (int) Cache::get('pull:baidu:news:mobile');
+        $lastTime = 0;
 
+        $searcher->each(function ($item) use ($pullTime, &$lastTime){
+            $time = DateTime::forString($item['pull_at']);
+            if($pullTime >= $time->timestamp){
+                return ;
+            }else{
+                $lastTime = $time->timestamp;
+            }
 
+            app(News::class)->create([
+                'title' => $item['title'],
+                'link' => $item['link'],
+                'author' => $item['author'],
+                'pull_at' => $time->format('Y-m-d H:i:s'),
+                'summary' => $item['summary'],
+                'detail'  => $item['detail']
+            ]);
+        });
+
+        Cache::put('pull:baidu:news:mobile', $lastTime, 60*24);
     }
 
+    /**
+     * @return mixed
+     */
     protected function getSearcher(){
         $ql = new QueryList();
         $ql->use(BaiduNewsMobile::class, 'baiduNewsMobile');
-        $baidu = $ql->baiduNewsMobile(40);
+        $baidu = $ql->baiduNewsMobile(20);
         return $baidu->search($this->argument('keyword'));
-
-//        $ql->use(BaiduNews::class, 'badiduNews');
-//
-//        $baidu = $ql->badiduNews(40);
-//
-//        return $baidu->search($this->argument('keyword'));
     }
 
 

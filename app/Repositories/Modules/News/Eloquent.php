@@ -11,4 +11,15 @@ class Eloquent extends RepositoriesAbstract implements Interfaces
     {
         $this->model = $model;
     }
+
+    public function create(array $attributes = [])
+    {
+        $model = parent::create($attributes);
+
+        if(isset($attributes['detail'])){
+            $model->detail()->create($attributes['detail']);
+        }
+
+        return $model;
+    }
 }
