@@ -29,7 +29,7 @@ class BaiduNews
 
     protected $site = '';
     /**
-     * BaiduNews constructor.
+     * PullNews constructor.
      * @param QueryList $ql
      * @param $pageSize
      */
