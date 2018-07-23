@@ -1,0 +1,14 @@
+.list{
+  box-sizing: border-box;
+  padding: 20rpx;
+}
+
+.list .header .date{
+  font-size: 45rpx;
+  font-weight: bold;
+}
+
+.list .header .subscribe{
+  font-size: 30rpx;
+  float: right;
+}

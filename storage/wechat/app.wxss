@@ -1,0 +1,7 @@
+/**index.wxss**/
+@import "./plugins/style/icon.wxss";
+page, .container{
+  height: 100%;
+  width: 100%;
+  background: #f8f8f9
+}

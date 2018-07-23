@@ -1,0 +1,30 @@
+/* components/lists/index.wxss */
+@import "../../plugins/style/icon.wxss";
+
+.list-item{
+  font-size: 32rpx;
+  border-radius: 10rpx;
+  border: 1rpx #dddee1 solid;
+  box-sizing: border-box;
+  padding: 40rpx;
+  margin-top: 20rpx;
+  background: #fff;
+}
+
+.list-item .title{
+  font-weight: bold;
+  margin-bottom: 32rpx; 
+  display: block;
+}
+
+.list-item .summary{
+  display: block;
+  margin-bottom: 32rpx; 
+}
+.list-item .author{
+  color: #bbbec4;
+}
+
+.list-item .author .share{
+  float: right;
+}

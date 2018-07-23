@@ -1,0 +1,10 @@
+<!--components/lists/index.wxml-->
+<view class="list-item" hover-stop-propagation='true' wx:for="{{lists}}" wx:for-index="idx" data-id="{{item.id}}" wx:for-item="item" bindtap="itemBindtap">
+  <view class='title'>{{item.title}}</view>
+  <view class='summary'>{{item.summary}}</view>
+  <view class="author">
+    <text>{{item.author}} 报道</text>
+    <text class="share iconfont icon-fenxiang"></text>
+  </view>
+</view>
+

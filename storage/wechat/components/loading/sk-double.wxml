@@ -1,0 +1,7 @@
+<!--components/loading/sk-double.wxml-->
+<view class='sk-loading'>
+    <view  class="sk-double-bounce">
+      <view class="sk-child sk-double-bounce1"></view>
+      <view class="sk-child sk-double-bounce2"></view>
+    </view>
+  </view>

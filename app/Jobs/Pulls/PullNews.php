@@ -12,6 +12,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Repositories\Modules\News\Interfaces as News;
 use Closure;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PullNews implements ShouldQueue
 {
@@ -45,7 +47,7 @@ class PullNews implements ShouldQueue
 
         $detail->setSuccess(Closure::fromCallable([$this, 'onSuccess']));
 
-        $detail->details($this->urls);
+        $detail->handle($this->urls);
     }
 
     /**
@@ -54,19 +56,22 @@ class PullNews implements ShouldQueue
      * @param array $args
      */
     public function onSuccess(array $item, array $args) {
+
         if(empty($item)){
             PullNews::dispatch([$args['url']])->delay(now()->addMinutes(10));
         }else{
             $dateTime = DateTime::forString(substr($item['sourcets'], 0, 10));
+
+            $content = $this->filterDetail($item['content']);
             app(News::class)->create(
                 [
                     'title' => $item['title'],
                     'link' => $item['url'],
                     'author' => $item['site'],
                     'pull_at' => $dateTime->format('Y-m-d H:i:s'),
-                    'summary' => '',
+                    'summary' => $this->filterSummary($content),
                     'detail' => [
-                        'content' => $this->filterDdetail($item['content']),
+                        'content' => $content,
                     ],
                 ]
             );
@@ -74,22 +79,34 @@ class PullNews implements ShouldQueue
     }
 
     /**
+     *
+     * @method filterSummary
+     * @param $content
+     *
+     * @return bool|string
+     *
+     * @author luffyzhao@vip.126.com
+     */
+    protected function filterSummary($content){
+        return Str::substr(preg_replace('/<\!--\[src\=(.*)\]-->/i', '', $content) , 0, 150);
+    }
+    /**
      * 过滤文章 or 下载图片
      * @param array $detail
      * @return string
      */
-    protected function filterDdetail(array $detail): string
+    protected function filterDetail(array $detail): string
     {
         return collect($detail)->map(
             function ($item){
                 if ($item['type'] === 'image') {
                     $filename = $this->filename($item['data']['original']['url']);
                     if($filename['exists'] === false){
-                        // 这里放一个下载图片的队列
+                        PullImages::dispatch([$filename]);
                     }
-                    return '<!--[src=' . $filename['url'] . ']-->';
+                    return '<!--[src=' . $filename['file'] . ']-->';
                 }else{
-                    return $item['data'];
+                    return strip_tags($item['data']);
                 }
             }
         )->implode("\n\n");
@@ -102,25 +119,20 @@ class PullNews implements ShouldQueue
      */
     protected function filename($file)
     {
-        $filename = md5($file);
-        $dir = storage_path('app/public/' . substr($filename, 0, 3));
-        if (!is_dir($dir)) {
-            mkdir($dir, true);
-        }
-
-        $earlFile = $dir.'/'.$filename.'.png';
+        $filename = storage_path('app/public/news/') . parse_url($file,  PHP_URL_PATH);;
+        $earlFile = $filename .'.png';
 
         if(file_exists($earlFile)){
             return [
-                'file' => $earlFile,
+                'url' => $file,
                 'exists' => true
             ];
         }
 
         return [
-            'file' => $earlFile,
+            'url' => $file,
             'exists' => false,
-            'url' => $this->imageUrl($earlFile)
+            'file' => $this->imageUrl($earlFile)
         ];
     }
 

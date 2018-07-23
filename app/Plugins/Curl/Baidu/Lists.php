@@ -9,93 +9,23 @@
 namespace App\Plugins\Curl\Baidu;
 
 
-use Ares333\Curl\Curl;
+use App\Plugins\Curl\Abstracts;
 use Closure;
+use Illuminate\Support\Facades\Log;
 
-class Lists
+/**
+ * @property Closure succes
+ */
+class Lists extends Abstracts
 {
     const API = 'https://news.baidu.com/news?';
-    protected static $instance = null;
-
-    protected $success;
-
-    protected $fail;
-
-    protected $curl = null;
-
-    protected $maxThread = 2;
 
     protected $pageSize = 40;
 
-    protected $cache = [
-        'enable' => false,
-        'compress' => 0,
-        'dir' => null,
-        'expire' => 86400,
-        'verifyPost' => false
+    protected $httpOpt = [
+        CURLOPT_REFERER => 'https://news.baidu.com/news',
+        CURLOPT_HTTPHEADER => ['Host:news.baidu.com'],
     ];
-
-    protected $httpOpt = [];
-
-    protected function __construct()
-    {
-        $this->curl = new Curl();
-    }
-
-    /**
-     * @param Closure $success
-     * @return $this
-     */
-    public function setSuccess(Closure $success)
-    {
-        $this->success = $success;
-
-        return $this;
-    }
-
-    /**
-     * @param Closure $fail
-     * @return $this
-     */
-    public function setFail(Closure $fail)
-    {
-        $this->fail = $fail;
-
-        return $this;
-    }
-
-    /**
-     * @param int $maxThread
-     * @return Detail
-     */
-    public function setMaxThread(int $maxThread): Detail
-    {
-        $this->maxThread = $maxThread;
-
-        return $this;
-    }
-
-    /**
-     * @param array $cache
-     * @return Detail
-     */
-    public function setCache(array $cache): Detail
-    {
-        $this->cache = array_merge($this->cache, $cache);
-
-        return $this;
-    }
-
-    /**
-     * @param array $httpOpt
-     * @return Detail
-     */
-    public function setHttpOpt(array $httpOpt): Detail
-    {
-        $this->httpOpt = array_merge($this->httpOpt, $httpOpt);
-
-        return $this;
-    }
 
     /**
      * @param int $pageSize
@@ -108,85 +38,56 @@ class Lists
         return $this;
     }
 
-    protected function __clone()
-    {
-    }
-
-    public static function instance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new static();
-        }
-
-        return self::$instance;
-    }
-
     /**
      * 开始搜索
-     * @param string $word
-     * @param int $page
+     * @method handle
+     * @param array $urls
+     *
+     * @author luffyzhao@vip.126.com
      */
-    public function search(string $word, int $page = 1){
-        $this->add($word, $page);
+    public function handle(array $urls) : void
+    {
+        collect($urls)->each(function ($item){
+            $this->add($this->formatUrl($item['word'],  $item['page'] ?? 1), $item);
+        });
         $this->start();
     }
 
-
     /**
-     * 开始采集
+     *
+     * @method setSuccess
+     * @param Closure $success
+     *
+     * @return $this|Abstracts
+     *
+     * @author luffyzhao@vip.126.com
      */
-    protected function start()
+    public function setSuccess(Closure $success)
     {
-        // 设置httpOpt
-        if(empty($this->httpOpt)){
-            $this->curl->opt = $this->httpOpt;
-        }
-
-        // 设置缓存
-        $this->curl->cache = $this->cache;
-
-        // 线程
-        $this->curl->maxThread = $this->maxThread;
-
-        $this->curl->start();
+        parent::setSuccess( function (array $r, array $args) use ($success) {
+            $body = json_decode($r['body'], true);
+            if (isset($body['errno']) && $body['errno'] === 0) {
+                call_user_func($success, $body['data']['list'], $args);
+            }
+        });
+        return $this;
     }
 
     /**
-     * @param string $word
-     * @param int $page
+     *
+     * @method setFail
+     * @param Closure $fail
+     *
+     * @return $this|Abstracts
+     *
+     * @author luffyzhao@vip.126.com
      */
-    protected function add(string $word, int $page): void
+    public function setFail(Closure $fail)
     {
-        $fail = $success = null;
-
-        if($this->success instanceof Closure){
-            $success = function (array $r, array $args) {
-                $body = json_decode($r['body'], true);
-                if (isset($body['errno']) && $body['errno'] === 0) {
-                    call_user_func($this->success, $body['data']['list'], $args);
-                }
-            };
-        }
-
-        if($this->fail instanceof Closure){
-            $fail =  $this->fail;
-        }
-
-        $this->curl->add(
-            [
-                'opt' => [
-                    CURLOPT_URL => $this->formatUrl($word, $page),
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_HEADER => true,
-                    CURLOPT_REFERER => 'https://news.baidu.com/news',
-                    CURLOPT_HTTPHEADER => ['Host:news.baidu.com'],
-                ],
-                'args' => ['word' => $word],
-            ],
-            $success,
-            $fail
-        );
+        parent::setFail(function ($r, $args)use ($fail){
+            call_user_func($fail, $r, $args);
+        });
+        return $this;
     }
 
     /**

@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "skDouble": "/components/loading/sk-double",
+    "listItem": "/components/lists/index"
+  },
+  "enablePullDownRefresh": false
+}

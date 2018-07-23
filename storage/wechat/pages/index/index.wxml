@@ -1,0 +1,14 @@
+<!--index.wxml-->
+<view class="container">
+  <skDouble wx:if="{{data.length == 0}}"></skDouble>
+
+  <view class="list">
+    <view class="header">
+      <text class="date">今天</text>
+      <text class="subscribe">订阅早报</text>
+    </view>
+
+    <listItem lists="{{data}}"></listItem>
+  </view>
+
+</view>

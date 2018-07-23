@@ -1,0 +1,22 @@
+/* pages/detail/index.wxss */
+.content{
+  box-sizing: border-box;
+  padding: 40rpx;
+}
+
+.content .title{
+  font-weight: bold;
+  margin-bottom: 32rpx; 
+}
+
+.content .center{
+  margin-bottom: 32rpx; 
+}
+
+.content .author{
+  color: #bbbec4;
+}
+
+.content .author .share{
+  float: right;
+}
