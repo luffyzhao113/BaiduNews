@@ -2,6 +2,7 @@
 .content{
   box-sizing: border-box;
   padding: 40rpx;
+  background-color: #fff;
 }
 
 .content .title{
@@ -19,4 +20,34 @@
 
 .content .author .share{
   float: right;
+}
+
+.old .title{
+  height: 80rpx;
+  line-height: 80rpx;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+}
+
+.old .lists{
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 40rpx;
+}
+
+.old .lists .item{
+  border-left:1px solid #ccc;
+  padding:20rpx 0rpx 20rpx 20rpx;
+}
+
+
+.old .lists .item .time{
+  position: relative;
+  font-size: 24rpx;
+  color: #ccc;
+}
+
+.old .lists .item .time::before{
+  position: absolute;
+  content: "."
 }

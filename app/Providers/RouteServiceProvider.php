@@ -41,6 +41,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapBaseRoutes();
 
+        $this->mapWechatRoutes();
+
         //
     }
 
@@ -86,5 +88,19 @@ class RouteServiceProvider extends ServiceProvider
             ->middleware('base')
             ->namespace($this->namespace . '\Base')
             ->group(base_path('routes/base.php'));
+    }
+
+    /**
+     * Define the "api" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapWechatRoutes()
+    {
+        Route::prefix('wechat')
+            ->namespace($this->namespace . '\Wechat')
+            ->group(base_path('routes/wechat.php'));
     }
 }

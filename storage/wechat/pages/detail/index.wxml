@@ -2,16 +2,34 @@
 <view class="container">
   <view class="content">
     <view class="title">
-      中国电信任命朱每为执行副总裁财务总临及董秘
+      {{data.title}}
     </view>
     <view class="center">
-      电影《阿尔法围棋》亮相2018上海国际电影节,国内首映掀起热潮,难道阿尔法GO准备出道?赶紧来pick这位影坛新星!影片回顾了与李世石的精彩对决,深度展示了AlphaGo对围棋竞技
-      电影《阿尔法围棋》亮相2018上海国际电影节,国内首映掀起热潮,难道阿尔法GO准备出道?赶紧来pick这位影坛新星!影片回顾了与李世石的精彩对决,深度展示了AlphaGo对围棋竞技
+      {{data.detail.content}}
     </view>
     <view class="author">
-      <text>新浪 报道</text>
-      <text class="share iconfont icon-fenxiang"></text>
+      <text>{{data.author}} 报道</text>
+      <text class="share iconfont icon-fenxiang" data-link="{{data.link}}" bindtap="onShare"></text>
     </view>
   </view>
-  
+  <view class='old'>
+    <view class='title'>
+      回顾阅读
+    </view>
+     <view  class="lists">
+        <view class='item'>
+          <view class='time'>5 小时前</view>
+          <view class='itemtitle'>庞华栋：区块链技术可能是避免下一场金融危机的钥匙</view>
+        </view>
+        <view class='item'>
+          <view class='time'>15 小时前</view>
+          <view class='itemtitle'>魔便利荣获第七届中国财经峰会最具投资价值奖</view>
+        </view>
+        <view class='item'>
+          <view class='time'>2 天前</view>
+          <view class='itemtitle'>区块链软件公司ConsenSys将向雄安新区提供区块链技术相关建议</view>
+        </view>
+    </view>
+  </view>
+ 
 </view>

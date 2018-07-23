@@ -4,15 +4,15 @@
 		"ignore": []
 	},
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"postcss": true,
 		"minified": true,
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"libVersion": "1.9.98",
-	"appid": "touristappid",
+	"libVersion": "2.2.0",
+	"appid": "wxce1513dd4d0a05ca",
 	"projectname": "wechat",
 	"condition": {
 		"search": {

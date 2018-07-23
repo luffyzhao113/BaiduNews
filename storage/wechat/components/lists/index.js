@@ -11,13 +11,6 @@ Component({
   },
 
   /**
-   * 组件的初始数据
-   */
-  data: {
-
-  },
-
-  /**
    * 组件的方法列表
    */
   methods: {
@@ -25,6 +18,24 @@ Component({
       wx.navigateTo({
         url: "../../pages/detail/index?id=" + event.target.dataset.id
       });
+    },
+    onShare(event) {
+      wx.showActionSheet({
+        itemList: ['复制此新闻链接'],
+        success({ tapIndex }) {
+          if(tapIndex === 0){
+            wx.setClipboardData({
+              data: event.target.dataset.link,
+              success: function (res) {
+                wx.showToast({
+                  title: '复制链接成功',
+                  duration: 2000
+                })
+              }
+            })
+          }         
+        }
+      })
     }
   }
 })
